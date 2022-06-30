@@ -1,0 +1,36 @@
+
+	org	0x4000
+
+MSXID2 = 0x002D
+CHPUT  = 0x00A2
+CHGCPU = 0x0180
+
+	defw	0x4241
+	defw	init
+	defw	0
+	space	10,0
+
+init::
+	ld	a,[MSXID2]
+	cp	a,3
+	jp	nz,entry
+
+	ld	a,0x82
+	call	CHGCPU
+
+	jp	entry
+
+puts::
+	ld	a,[de]
+	cp	a,'$'
+	ret	z
+	call	CHPUT
+	inc	de
+	jr	puts
+
+exit::
+	jr	exit
+
+	include	"r800chk.zmi"
+
+	space	0x8000-$,0

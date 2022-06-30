@@ -1,0 +1,121 @@
+
+	org	0x4000
+
+MSXID2 = 0x002D
+CHPUT  = 0x00A2
+CHGCPU = 0x0180
+PROCNM = 0xFD89
+
+CALBAS = 0x0159
+ERRHAND = 0x406F
+CHRGTR = 0x4666
+FRMQNT = 0x542F
+
+	defw	0x4241
+	defw	0
+	defw	statement
+	space	10,0
+
+statement::
+	push	hl
+
+	ld	de,R800CHK_S
+	call	chkprocnm
+	jp	z,entry
+
+	ld	de,CHGCPU_S
+	call	chkprocnm
+	jr	z,CALL_CHGCPU
+
+noturbor::
+	pop	hl
+
+	scf
+	ret
+
+chkprocnm::
+	ld	hl,PROCNM
+lp:
+	ld	a,[de]
+	cpi
+	ret	nz
+	or	a,a
+	ret	z
+	inc	de
+	jr	lp
+
+R800CHK_S::
+	defs	"R800CHK"
+	defb	0
+
+CHGCPU_S::
+	defs	"CHGCPU"
+	defb	0
+
+calbas_chrgtr::
+	ld	ix, CHRGTR
+	jp	CALBAS
+
+calbas_frmqnt::
+	ld	ix, FRMQNT
+	jp	CALBAS
+
+calbas_illegal_function_call::
+	ld	e,5
+	ld	ix, ERRHAND
+	jp	CALBAS
+
+
+CALL_CHGCPU::
+	ld	a,[MSXID2]
+	cp	a,3
+	jr	nz,noturbor
+
+	pop	hl
+
+	dec	hl
+	call	calbas_chrgtr
+	cp	a,'('
+	jp	nz,calbas_illegal_function_call
+	inc	hl
+
+	call	calbas_frmqnt
+
+	push	de
+
+	dec	hl
+	call	calbas_chrgtr
+	cp	a,')'
+	jp	nz,calbas_illegal_function_call
+	inc	hl
+
+	pop	de
+
+	push	hl
+
+	ld	a,e
+
+	call	CHGCPU
+
+	pop	hl
+
+	or	a,a
+	ret
+
+
+puts::
+	ld	a,[de]
+	cp	a,'$'
+	ret	z
+	call	CHPUT
+	inc	de
+	jr	puts
+
+exit::
+	pop	hl
+	or	a,a
+	ret
+
+	include	"r800chk.zmi"
+
+	space	0x8000-$,0

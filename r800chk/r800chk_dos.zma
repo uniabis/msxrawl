@@ -1,0 +1,19 @@
+
+	org	0x0100
+
+BDOS = 0x0005
+_TERM0 = 0x00
+_CONOUT = 0x02
+_STROUT = 0x09
+
+	jp	entry
+
+exit::
+	ld	c, _TERM0
+	jp	BDOS
+puts::
+	ld	c, _STROUT
+	jp	BDOS
+
+	include	"r800chk.zmi"
+

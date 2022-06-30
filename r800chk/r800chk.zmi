@@ -1,0 +1,93 @@
+
+entry::
+
+	ld	de,test1_text
+	call	puts
+	call	test1_code
+	call	putresult
+
+	ld	de,test2_text
+	call	puts
+	call	test2_code
+	call	putresult
+
+	ld	de,test3_text
+	call	puts
+	call	test3_code
+	call	putresult
+
+	ld	de,test4_text
+	call	puts
+	call	test4_code
+	call	putresult
+
+	jp	exit
+
+
+putresult::
+	ld	de,ncresult
+	jp	nc,puts
+	ld	de,cresult
+	jp	puts
+
+ncresult::
+	defs	"result:NC\r\n\r\n$"
+
+cresult::
+	defs	"result:C\r\n\r\n$"
+
+test1_code::
+	sll	a
+	rra
+	ret
+
+test1_text::
+	defs	"TEST1:CB 37 1F\r\n"
+	defs	"sll a:rra\r\n"
+	defs	"Z80:C R800:NC $"
+
+test2_code::
+	ld	l,-1
+	defb	0xDD
+	inc	ix
+	rr	l
+	ret
+
+test2_text::
+	defs	"TEST2:2E FF DD DD 23 CB 1D\r\n"
+	defs	"ld l,-1:db 0DDh:inc ix:rr l\r\n"
+	defs	"Z80:C R800:NC $"
+
+test3_code::
+	xor	a,a
+	dec	a
+	ld	b, a
+	mulub	a,b
+	ccf
+	ret
+
+test3_text::
+	defs	"TEST3:AF 3D 47 ED C1 3F\r\n"
+	defs	"xor a:dec a:ld b,a:mulub a,b:ccf\r\n"
+	defs	"Z80:C R800:NC $"
+
+test4_code::
+	ld	c,-1
+	push	bc
+	pop	af
+	xor	a,a
+	push	af
+	pop	bc
+	ld	a,c
+	rla
+	rla
+	rla
+	ccf
+	ret
+
+test4_text::
+	defs	"TEST4:0E FF C5 F1 AF F5 C1 79 17 17 17 3F\r\n"
+	defs	"ld c,-1:push bc:pop af:xor a:push af:pop bc:ld a,c:rla:rla:rla:ccf\r\n"
+	defs	"Z80:C R800:NC $"
+
+
