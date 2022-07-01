@@ -1,88 +1,88 @@
-
+﻿
 # r800chk
 
-## �g����
+## 使い方
 
-Z80��R800�̓���̈Ⴂ���m�F���܂��B
+Z80とR800の動作の違いを確認します。
 
 ### r800chk.com
 
-MSX-DOS/DOS2/Nextor��
+MSX-DOS/DOS2/Nextor版
 
-CPU���[�h�ؑ֋@�\�͂���܂���B
+CPUモード切替機能はありません。
 
 ### r800chk.rom
 
-�g��BASIC��
+拡張BASIC版
 
 ```
 CALL R800CHK
 ```
-�e�X�g�����s���܂��B
+テストを実行します。
 
 ```
 CALL CHGCPU(areg)
 ```
-turboR�ł����BIOS��CHGCPU���Ăяo���܂��B
-areg��CHGCPU�ɓn��A���W�X�^�̒l�ł��B
-128�Ȃ�Z80���[�h�B
-129�Ȃ�R800ROM���[�h�B
-130�Ȃ�R800DRAM���[�h�B
+turboRであればBIOSのCHGCPUを呼び出します。
+aregはCHGCPUに渡すAレジスタの値です。
+128ならZ80モード。
+129ならR800ROMモード。
+130ならR800DRAMモード。
 
 ### r800chk_auto.rom
 
-�����N��ROM��
+自動起動ROM版
 
-turboR�Ȃ�R800DRAM���[�h�ɐ؂�ւ��܂��B
+turboRならR800DRAMモードに切り替わります。
 
-## �ڍ�
+## 詳細
 
-### �e�X�g1
+### テスト1
 
-����`����SLL�́A
-Z80�ł͍ŉ��ʃr�b�g��1�ɂȂ�܂��B
-R800�ł�SLA�Ɠ�������ƂȂ�ŉ��ʃr�b�g��0�ɂȂ�܂��B
+未定義命令SLLは、
+Z80では最下位ビットは1になります。
+R800ではSLAと同じ動作となり最下位ビットは0になります。
 
 ```
 	sll	a
 	rra
 ```
 
-### �e�X�g2
+### テスト2
 
 ```
 	ld	l,-1
-	defb	0xDD
+	defb	0DDh
 	inc	ix
 	rr	l
 ```
 
-DD/FD�v���t�B�b�N�X����������ꍇ�A
-Z80�ł͍Ō�̃v���t�B�b�N�X���L���ƂȂ�܂��B
-R800�ł�2��NOP�����ƂȂ�܂��B
-Z80�ł�L���W�X�^��-1����ω����܂���B
-R800�ł�inc ix��inc hl�ƂȂ�L���W�X�^��0�ƂȂ�܂��B
+DD/FDプリフィックスが複数ある場合、
+Z80では最後のプリフィックスが有効となります。
+R800では2つでNOP扱いとなります。
+Z80ではLレジスタは-1から変化しません。
+R800ではinc ixがinc hlとなりLレジスタは0となります。
 
-### �e�X�g3
+### テスト3
 
 ```
-	xor	a,a
+	xor	a
 	dec	a
 	ld	b, a
 	mulub	a,b
 	ccf
 ```
 
-R800�Œǉ����ꂽ8bit�|���Z���߂͌��ʂ�8bit�Ɏ��܂�Ȃ��ꍇ��CF���Z�b�g����܂��B
-Z80�ł�NOP�����̂���CF�͕ω����܂���B
+R800で追加された8bit掛け算命令は結果が8bitに収まらない場合にCFがセットされます。
+Z80ではNOP扱いのためCFは変化しません。
 
-### �e�X�g4
+### テスト4
 
 ```
 	ld	c,-1
 	push	bc
 	pop	af
-	xor	a,a
+	xor	a
 	push	af
 	pop	bc
 	ld	a,c
@@ -92,5 +92,23 @@ Z80�ł�NOP�����̂���CF�͕ω����܂���B
 	ccf
 ```
 
-R800�ł͖��g�p�t���O��pop af�݂̂ŕω����܂��B
-Z80�ł�xor���߂ɂ��Ă�Z80 undocumented documented�ɋL�ڂ���Ă���悤�ɕω����܂��B
+R800では未使用フラグはpop afのみで変化します。
+Z80ではxor命令については[The Undocumented Z80 Documented](http://www.myquest.nl/z80undocumented/)に記載されているように変化します。
+R800ではフラグレジスタに-1をセットした以後、未使用フラグは変化しません。
+Z80ではxor aで未使用フラグがクリアされます。
+未使用フラグの挙動は[Sinclair Wiki](https://sinclair.wiki.zxnet.co.uk/wiki/Z80)などでさらに詳しく説明されています。
+
+## 結果
+
+FS-A1ST実機ではZ80とR800の双方が想定通りに動作しました。
+
+[WebMSXのMSX2で実行](https://webmsx.org/?CARTRIDGE1_URL=https://github.com/uniabis/msxrawl/raw/main/r800chk/r800chk_auto.rom&MACHINE=MSX2J)
+
+[WebMSXのturboRで実行](https://webmsx.org/?CARTRIDGE1_URL=https://github.com/uniabis/msxrawl/raw/main/r800chk/r800chk_auto.rom&MACHINE=MSXTRJ)
+
+WebMSXのZ80は想定通りに動作しました。
+WebMSXのR800はDD/FDプリフィックスと未使用フラグがZ80の場合と同じように動作するようです。
+
+openMSXのZ80は想定通りに動作しました。
+openMSXのR800はDD/FDプリフィックスがZ80の場合と同じように動作するようです。
+
