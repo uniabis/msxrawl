@@ -18,3 +18,7 @@ MSXに搭載されているMSX-JEの情報を表示します。
 ## [r800chk](https://github.com/uniabis/msxrawl/tree/main/r800chk)
 
 Z80とR800の動作の違いを確認します。
+
+## [msxbootkeys](https://github.com/uniabis/msxrawl/tree/main/msxbootkeys)
+
+MSXの起動時のキー入力による機能の情報を記載しています。
