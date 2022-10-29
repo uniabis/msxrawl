@@ -1,8 +1,16 @@
 
 	org	0x4000
 
-MSXID2 = 0x002D
 CHPUT  = 0x00A2
+
+	defw	0x4241
+	defw	0
+	defw	statement
+	space	10,0
+
+	scope	basic_extension
+
+MSXID2 = 0x002D
 CHGCPU = 0x0180
 PROCNM = 0xFD89
 
@@ -11,29 +19,24 @@ ERRHAND = 0x406F
 CHRGTR = 0x4666
 FRMQNT = 0x542F
 
-	defw	0x4241
-	defw	0
-	defw	statement
-	space	10,0
-
 statement::
 	push	hl
 
 	ld	de,R800CHK_S
 	call	chkprocnm
-	jp	z,entry
+	jp	z,r800chk_entry
 
 	ld	de,CHGCPU_S
 	call	chkprocnm
 	jr	z,CALL_CHGCPU
 
-noturbor::
+noturbor:
 	pop	hl
 
 	scf
 	ret
 
-chkprocnm::
+chkprocnm:
 	ld	hl,PROCNM
 lp:
 	ld	a,[de]
@@ -44,29 +47,29 @@ lp:
 	inc	de
 	jr	lp
 
-R800CHK_S::
+R800CHK_S:
 	defs	"R800CHK"
 	defb	0
 
-CHGCPU_S::
+CHGCPU_S:
 	defs	"CHGCPU"
 	defb	0
 
-calbas_chrgtr::
+calbas_chrgtr:
 	ld	ix, CHRGTR
 	jp	CALBAS
 
-calbas_frmqnt::
+calbas_frmqnt:
 	ld	ix, FRMQNT
 	jp	CALBAS
 
-calbas_illegal_function_call::
+calbas_illegal_function_call:
 	ld	e,5
 	ld	ix, ERRHAND
 	jp	CALBAS
 
 
-CALL_CHGCPU::
+CALL_CHGCPU:
 	ld	a,[MSXID2]
 	cp	a,3
 	jr	nz,noturbor
@@ -102,6 +105,7 @@ CALL_CHGCPU::
 	or	a,a
 	ret
 
+	endscope
 
 puts::
 	ld	a,[de]
@@ -111,7 +115,7 @@ puts::
 	inc	de
 	jr	puts
 
-exit::
+r800chk_exit::
 	pop	hl
 	or	a,a
 	ret

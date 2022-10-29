@@ -6,9 +6,9 @@ _TERM0 = 0x00
 _CONOUT = 0x02
 _STROUT = 0x09
 
-	jp	entry
+	jp	r800chk_entry
 
-exit::
+r800chk_exit::
 	ld	c, _TERM0
 	jp	BDOS
 puts::

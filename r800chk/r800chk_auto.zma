@@ -13,12 +13,12 @@ CHGCPU = 0x0180
 init::
 	ld	a,[MSXID2]
 	cp	a,3
-	jp	nz,entry
+	jp	nz,r800chk_entry
 
 	ld	a,0x82
 	call	CHGCPU
 
-	jp	entry
+	jp	r800chk_entry
 
 puts::
 	ld	a,[de]
@@ -28,8 +28,10 @@ puts::
 	inc	de
 	jr	puts
 
-exit::
-	jr	exit
+r800chk_exit::
+
+lp:
+	jr	lp
 
 	include	"r800chk.zmi"
 

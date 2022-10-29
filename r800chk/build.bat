@@ -6,7 +6,7 @@ zma r800chk_rom.zma r800chk.rom
 
 zma r800chk_auto.zma r800chk_auto.rom
 
+pause
+
 del zma.log
 del zma.sym
-
-pause
