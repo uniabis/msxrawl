@@ -1,5 +1,5 @@
 
-skw01_dump_sram:
+skw01_dump_romp4:
 
 ;[output]
 ;	NZ:error
@@ -9,7 +9,7 @@ skw01_dump_sram:
 	ld	de,dta
 	call	bdos_setdta
 
-	ld	de,fcb_sram
+	ld	de,fcb_romp4
 	call	bdos_fmake
 
 	or	a
@@ -17,9 +17,9 @@ skw01_dump_sram:
 
 
 	ld	hl,SIZDTA
-	ld	(fcb_sram+14),hl
+	ld	(fcb_romp4+14),hl
 
-	ld	hl,8000h
+	ld	hl,0
 
 .lp_block:
 
@@ -64,7 +64,7 @@ skw01_dump_sram:
 	or	a
 	jr	nz,.errorclose
 
-	bit	3,h
+	bit	7,h
 	jr	z,.lp_block
 
 	call	bdos_fclose
@@ -81,6 +81,6 @@ skw01_dump_sram:
 	ret
 
 
-fcb_sram:
-	db	0,'SKW-01  SRM'
+fcb_romp4:
+	db	0,'SKW-01P4ROM'
 	ds	25,0

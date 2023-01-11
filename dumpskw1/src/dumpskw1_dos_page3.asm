@@ -31,6 +31,8 @@ SIZDTA	equ	800h
 
 	include	"msx_lib_skw01_dump_kanji.inc"
 
+	include	"msx_lib_skw01_dump_romp4.inc"
+
 	include	"msx_lib_skw01_dump_sram.inc"
 
 entry_page3:
@@ -53,6 +55,10 @@ entry_page3:
 
 .failed_kanji:
 	ld	de,.msg_badkanji
+	jr	.termm
+
+.failed_romp4:
+	ld	de,.msg_badromp4
 	jr	.termm
 
 .failed_sram:
@@ -82,6 +88,12 @@ entry_page3:
 	ld	de,.msg_okkanji
 	call	puts
 
+	call	skw01_dump_romp4
+	jr	nz,.failed_romp4
+
+	ld	de,.msg_okromp4
+	call	puts
+
 	call	skw01_dump_sram
 	jr	nz,.failed_sram
 
@@ -91,7 +103,7 @@ entry_page3:
 	jr	.term0
 
 .msg_title:
-	db	'SKW-01 dumper v0.1',0Dh,0Ah,'$'
+	db	'SKW-01 dumper v0.2',0Dh,0Ah,'$'
 
 .msg_error:
 	db	'SKW-01 not found.',0Dh,0Ah,'$'
@@ -108,8 +120,15 @@ entry_page3:
 .msg_badkanji:
 	db	'SKW-01KF.ROM failed.',0Dh,0Ah,'$'
 
+.msg_okromp4:
+	db	'SKW-01P4.ROM dumped.',0Dh,0Ah,'$'
+
+.msg_badromp4:
+	db	'SKW-01P4.ROM failed.',0Dh,0Ah,'$'
+
 .msg_oksram:
 	db	'SKW-01.SRM dumped.',0Dh,0Ah,'$'
 
 .msg_badsram:
 	db	'SKW-01.SRM failed.',0Dh,0Ah,'$'
+

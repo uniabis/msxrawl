@@ -34,6 +34,8 @@ binstart:
 
 	include	"msx_lib_skw01_dump_kanji.inc"
 
+	include	"msx_lib_skw01_dump_romp4.inc"
+
 	include	"msx_lib_skw01_dump_sram.inc"
 
 	include	"msx_lib_get_slot_page1.inc"
@@ -60,6 +62,10 @@ binentry:
 	ld	de,.msg_badkanji
 	jr	.termm
 
+.failed_romp4:
+	ld	de,.msg_badromp4
+	jr	.termm
+
 .failed_sram:
 	ld	de,.msg_badsram
 	jr	.termm
@@ -82,6 +88,12 @@ binentry:
 	ld	de,.msg_okkanji
 	call	puts
 
+	call	skw01_dump_romp4
+	jr	nz,.failed_romp4
+
+	ld	de,.msg_okromp4
+	call	puts
+
 	call	skw01_dump_sram
 	jr	nz,.failed_sram
 
@@ -91,7 +103,7 @@ binentry:
 	jr	.term0
 
 .msg_title:
-	db	'SKW-01 dumper v0.1',0Dh,0Ah,'$'
+	db	'SKW-01 dumper v0.2',0Dh,0Ah,'$'
 
 .msg_error:
 	db	'SKW-01 not found.',0Dh,0Ah,'$'
@@ -107,6 +119,12 @@ binentry:
 
 .msg_badkanji:
 	db	'SKW-01KF.ROM failed.',0Dh,0Ah,'$'
+
+.msg_okromp4:
+	db	'SKW-01P4.ROM dumped.',0Dh,0Ah,'$'
+
+.msg_badromp4:
+	db	'SKW-01P4.ROM failed.',0Dh,0Ah,'$'
 
 .msg_oksram:
 	db	'SKW-01.SRM dumped.',0Dh,0Ah,'$'

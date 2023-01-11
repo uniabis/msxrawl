@@ -20,22 +20,22 @@ skw01_dump_kanji:
 	ld	(fcb_kanji_font+14),hl
 
 	ld	ix,7FC0h
-	call	.kanji64k
+	call	.kanji32k
 
 	ld	ix,7FC2h
-	call	.kanji64k
+	call	.kanji32k
 
 	ld	ix,7FC4h
-	call	.kanji64k
+	call	.kanji32k
 
 	ld	ix,7FC6h
-	call	.kanji64k
+	call	.kanji32k
 
 	call	bdos_fclose
 	or	a
 	ret
 
-.kanji64k:
+.kanji32k:
 
 	ld	hl,0
 
@@ -88,9 +88,8 @@ skw01_dump_kanji:
 	or	a
 	jr	nz,.errorclose
 
-	ld	a,h
-	or	l
-	jr	nz,.lp_block
+	bit 7,h
+	jr	z,.lp_block
 
 	ret
 

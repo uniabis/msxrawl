@@ -19,8 +19,9 @@ DUMPSKW1.COM
 |FILENAME|LENGTH|DESCRIPTION|
 |---|---|---|
 |SKW-01.ROM|32KB|PLAIN ROM(0000-7FFFH)|
-|SKW-01KF.ROM|256KB|PORT0,1,2,3 IMAGE|
-|SKW-01.SRM|64KB|PORT4 IMAGE|
+|SKW-01KF.ROM|128KB|PORT0,1,2,3(0000-7FFFH) KANJI FONT IMAGE|
+|SKW-01P4.ROM|32KB|PORT4(0000-7FFFH) ROM IMAGE|
+|SKW-01.SRM|2KB|PORT4(8000-87FFH) SRAM IMAGE|
 
 ## SKW-01 hardware
 
@@ -28,19 +29,19 @@ DUMPSKW1.COM
 
 |ADDRESS|R/W|NAME|DESCRIPTION|
 |---|---|---|---|
-|7FC0|W|PORT0 ADDRESS L|set low 8bits of address|
+|7FC0|W|PORT0 ADDRESS L|set low 8bits of address and become not ready|
 |7FC0|R|PORT0 STATUS|bit0=1:ready to read,0:not ready|
 |7FC1|W|PORT0 ADDRESS H|set high 8bits of address|
 |7FC1|R|PORT0 DATA|data value|
-|7FC2|W|PORT1 ADDRESS L|set low 8bits of address|
+|7FC2|W|PORT1 ADDRESS L|set low 8bits of address and become not ready|
 |7FC2|R|PORT1 STATUS|bit0=1:ready to read,0:not ready|
 |7FC3|W|PORT1 ADDRESS H|set high 8bits of address|
 |7FC3|R|PORT1 DATA|data value|
-|7FC4|W|PORT2 ADDRESS L|set low 8bits of address|
+|7FC4|W|PORT2 ADDRESS L|set low 8bits of address and become not ready|
 |7FC4|R|PORT2 STATUS|bit0=1:ready to read,0:not ready|
 |7FC5|W|PORT2 ADDRESS H|set high 8bits of address|
 |7FC5|R|PORT2 DATA|data value|
-|7FC6|W|PORT3 ADDRESS L|set low 8bits of address|
+|7FC6|W|PORT3 ADDRESS L|set low 8bits of address and become not ready|
 |7FC6|R|PORT3 STATUS|bit0=1:ready to read,0:not ready|
 |7FC7|W|PORT3 ADDRESS H|set high 8bits of address|
 |7FC7|R|PORT3 DATA|data value|
