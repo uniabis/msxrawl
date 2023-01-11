@@ -1,0 +1,4 @@
+
+CLPRM1	equ	0F398h
+EXPTBL	equ	0FCC1h
+SLTTBL	equ	0FCC5h
