@@ -50,7 +50,7 @@ DUMPSKW1.COM
 |7FCA|R/W|PORT4 DATA|data value|
 |7FCB|R/W?|PORT4 DATA|mirror value|
 |7FCC|W|LPT CONTROL|write 00h,FFh to output one data byte|
-|7FCC|R|LPT STATUS|0:ready to write,1:not ready|
+|7FCC|R|LPT STATUS|bit1=0:ready to write,1:not ready|
 |7FCE|W|LPT DATA|data value|
 
 
