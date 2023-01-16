@@ -9,7 +9,7 @@ skw01_dump_kanji:
 	ld	de,dta
 	call	bdos_setdta
 
-	ld	de,fcb_kanji_font
+	ld	de,.fcb_kanji_font
 	call	bdos_fmake
 
 	or	a
@@ -17,7 +17,7 @@ skw01_dump_kanji:
 
 
 	ld	hl,SIZDTA
-	ld	(fcb_kanji_font+14),hl
+	ld	(.fcb_kanji_font+14),hl
 
 	ld	ix,7FC0h
 	call	.kanji32k
@@ -104,6 +104,6 @@ skw01_dump_kanji:
 	ret
 
 
-fcb_kanji_font:
+.fcb_kanji_font:
 	db	0,'SKW-01KFROM'
 	ds	25,0

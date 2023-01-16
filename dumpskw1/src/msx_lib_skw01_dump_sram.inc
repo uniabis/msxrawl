@@ -9,7 +9,7 @@ skw01_dump_sram:
 	ld	de,dta
 	call	bdos_setdta
 
-	ld	de,fcb_sram
+	ld	de,.fcb_sram
 	call	bdos_fmake
 
 	or	a
@@ -17,7 +17,7 @@ skw01_dump_sram:
 
 
 	ld	hl,SIZDTA
-	ld	(fcb_sram+14),hl
+	ld	(.fcb_sram+14),hl
 
 	ld	hl,8000h
 
@@ -81,6 +81,6 @@ skw01_dump_sram:
 	ret
 
 
-fcb_sram:
+.fcb_sram:
 	db	0,'SKW-01  SRM'
 	ds	25,0

@@ -1,7 +1,7 @@
 
 	org	100h
 
-CODEBASE_PAGE3	equ	0C100h
+CODEBASE_PAGE3	equ	0C400h
 
 	ld	de,CODEBASE_PAGE3
 	ld	hl,codezx0

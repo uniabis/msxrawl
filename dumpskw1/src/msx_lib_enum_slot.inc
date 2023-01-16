@@ -25,7 +25,7 @@ enum_slot:
 	ret	nz
 
 	bit	7,a
-	jr	nz,.not_extended
+	jr	z,.not_extended
 	add	4
 	bit	4,a
 	jr	z,.extened_slot_loop

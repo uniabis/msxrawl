@@ -11,14 +11,14 @@ skw01_dump_rom:
 	ld	de,dta
 	call	bdos_setdta
 
-	ld	de,fcb_rom
+	ld	de,.fcb_rom
 	call	bdos_fmake
 
 	or	a
 	ret	nz
 
 	ld	hl,SIZDTA
-	ld	(fcb_rom+14),hl
+	ld	(.fcb_rom+14),hl
 
 	ld	hl,0
 
@@ -68,7 +68,7 @@ skw01_dump_rom:
 	ret
 
 
-fcb_rom:
+.fcb_rom:
 	db	0,'SKW-01  ROM'
 	ds	25,0
 

@@ -9,7 +9,7 @@ skw01_dump_romp4:
 	ld	de,dta
 	call	bdos_setdta
 
-	ld	de,fcb_romp4
+	ld	de,.fcb_romp4
 	call	bdos_fmake
 
 	or	a
@@ -17,7 +17,7 @@ skw01_dump_romp4:
 
 
 	ld	hl,SIZDTA
-	ld	(fcb_romp4+14),hl
+	ld	(.fcb_romp4+14),hl
 
 	ld	hl,0
 
@@ -81,6 +81,6 @@ skw01_dump_romp4:
 	ret
 
 
-fcb_romp4:
+.fcb_romp4:
 	db	0,'SKW-01P4ROM'
 	ds	25,0
