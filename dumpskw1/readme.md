@@ -27,31 +27,31 @@ DUMPSKW1.COM
 
 ### SKW-01 MEMORY MAPPED I/O
 
-|ADDRESS|R/W|NAME|DESCRIPTION|
-|---|---|---|---|
-|7FC0|W|PORT0 ADDRESS L|set low 8bits of address and become not ready|
-|7FC0|R|PORT0 STATUS|bit0=1:ready to read,0:not ready|
-|7FC1|W|PORT0 ADDRESS H|set high 8bits of address|
-|7FC1|R|PORT0 DATA|data value|
-|7FC2|W|PORT1 ADDRESS L|set low 8bits of address and become not ready|
-|7FC2|R|PORT1 STATUS|bit0=1:ready to read,0:not ready|
-|7FC3|W|PORT1 ADDRESS H|set high 8bits of address|
-|7FC3|R|PORT1 DATA|data value|
-|7FC4|W|PORT2 ADDRESS L|set low 8bits of address and become not ready|
-|7FC4|R|PORT2 STATUS|bit0=1:ready to read,0:not ready|
-|7FC5|W|PORT2 ADDRESS H|set high 8bits of address|
-|7FC5|R|PORT2 DATA|data value|
-|7FC6|W|PORT3 ADDRESS L|set low 8bits of address and become not ready|
-|7FC6|R|PORT3 STATUS|bit0=1:ready to read,0:not ready|
-|7FC7|W|PORT3 ADDRESS H|set high 8bits of address|
-|7FC7|R|PORT3 DATA|data value|
-|7FC8|W|PORT4 ADDRESS L|set low 8bits of address|
-|7FC9|W|PORT4 ADDRESS H|set high 8bits of address|
-|7FCA|R/W|PORT4 DATA|data value|
-|7FCB|R/W?|PORT4 DATA|mirror value|
-|7FCC|W|LPT CONTROL|write 00h,FFh to output one data byte|
-|7FCC|R|LPT STATUS|bit1=0:ready to write,1:not ready|
-|7FCE|W|LPT DATA|data value|
+|ADDRESS|R/W|NAME|DESCRIPTION|INITIAL VALUE|
+|---|---|---|---|---|
+|7FC0|W|PORT0 ADDRESS L|set low 8bits of address and become not ready|unknown|
+|7FC0|R|PORT0 STATUS|bit0=1:ready to read,0:not ready / other bits are always 0|00h|
+|7FC1|W|PORT0 ADDRESS H|set high 8bits of address|unknown|
+|7FC1|R|PORT0 DATA|data value|FFh|
+|7FC2|W|PORT1 ADDRESS L|set low 8bits of address and become not ready|unknown|
+|7FC2|R|PORT1 STATUS|bit0=1:ready to read,0:not ready / other bits are always 0|00h|
+|7FC3|W|PORT1 ADDRESS H|set high 8bits of address|unknown|
+|7FC3|R|PORT1 DATA|data value|FFh|
+|7FC4|W|PORT2 ADDRESS L|set low 8bits of address and become not ready|unknown|
+|7FC4|R|PORT2 STATUS|bit0=1:ready to read,0:not ready / other bits are always 0|00h|
+|7FC5|W|PORT2 ADDRESS H|set high 8bits of address|unknown|
+|7FC5|R|PORT2 DATA|data value|FFh|
+|7FC6|W|PORT3 ADDRESS L|set low 8bits of address and become not ready|unknown|
+|7FC6|R|PORT3 STATUS|bit0=1:ready to read,0:not ready / other bits are always 0|00h|
+|7FC7|W|PORT3 ADDRESS H|set high 8bits of address|unknown|
+|7FC7|R|PORT3 DATA|data value|FFh|
+|7FC8|W|PORT4 ADDRESS L|set low 8bits of address|00h?(guessed, but value of reading is always FFh)|
+|7FC9|W|PORT4 ADDRESS H|set high 8bits of address|00h?(guessed, but value of reading is  always FFh)|
+|7FCA|R/W|PORT4 DATA|data value|B1h(same as first byte of SKW-01P4.ROM)|
+|7FCB|R/W?|PORT4 DATA|mirror value|B1h|
+|7FCC|W|LPT CONTROL|write 00h,FFh to output one data byte|unknown|
+|7FCC|R|LPT STATUS|bit1=0:ready to write,1:not ready / other bits may be always 1(not tested with printer)|FFh|
+|7FCE|W|LPT DATA|data value|always FFh(not readable)|
 
 
 ### SKW-01 PORT ASSIGN
