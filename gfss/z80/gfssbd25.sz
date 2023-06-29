@@ -1,0 +1,126 @@
+; BANK0/BANK8 COMMON VRAM ACCESS CODE
+
+
+	INCLUDE	"gfss.iz"
+
+	ORG	0BD25H
+
+; BD25
+; HL SOURCE RAM ADDRESS
+; DE DESTINATION VRAM ADDRESS
+; BC LENGTH
+LDIRVM_EX:
+	LD	A, B
+	LD	B, C
+	LD	C, A
+	INC	C
+
+.lp2:
+	EX	DE,HL
+	CALL	GFSS_SETWRT
+	EX	DE,HL
+
+	PUSH	BC
+
+	LD	A, (0x0007)
+	LD	C, A
+.lp1:
+	OUTI
+	INC	DE
+	JR	NZ, .lp1
+
+	EI
+
+	POP	BC
+
+	LD	B, 0
+	DEC	C
+	JR	NZ, .lp2
+
+	RET
+
+	DS	0BD48H-$
+
+; BD48
+; HL SOURCE VRAM ADDRESS
+; DE DESTINATION RAM ADDRESS
+; BC LENGTH
+LDIRMV_EX:
+	LD	A, B
+	LD	B, C
+	LD	C, A
+	INC	C
+
+	EX	DE, HL
+.lp2:
+	EX	DE, HL
+	CALL	GFSS_SETRD
+	EX	DE, HL
+
+	PUSH	BC
+
+	LD	A, (0x0006)
+	LD	C, A
+.lp1:
+	INI
+	INC	DE
+	JR	NZ, .lp1
+
+	EI
+
+	POP	BC
+
+	LD	B, 0
+	DEC	C
+	JR	NZ, .lp2
+
+	RET
+
+	DS	0BD6EH-$
+
+; BD6E
+; HL DESTINATION VRAM ADDRESS
+; BC LENGTH
+; A FILL DATA
+	ASSERT GFSS_FILVRM == $, fix gfss.inc
+
+filvrm_ex_implement:
+
+	PUSH	HL
+	PUSH	DE
+
+	LD	E, C
+	LD	D, B
+
+	PUSH	AF
+
+	CALL	GFSS_SETWRT
+	LD	A, (0007H)
+	LD	C, A
+
+.lp1:
+	POP	AF
+
+	OUT	(C), A
+	INC	HL
+
+	PUSH	AF
+
+	DEC	DE
+	LD	A, D
+	OR	E
+
+	JR	NZ, .lp1
+
+	EI
+
+	POP	AF
+
+	POP	DE
+	POP	HL
+
+	RET
+
+	DS	0BD90H-$
+
+

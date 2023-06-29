@@ -26,3 +26,7 @@ MSXの起動時のキー入力による機能の情報を記載しています�
 ## [dumpskw1](https://github.com/uniabis/msxrawl/tree/main/dumpskw1)
 
 SKW-01のROMイメージやSRAMデータを保存します。
+
+## [gfss](https://github.com/uniabis/msxrawl/tree/main/gfss)
+
+どうやらスムーススクロールパッチを作ってみたくなったようです。

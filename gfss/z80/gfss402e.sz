@@ -1,0 +1,23 @@
+; BANK0/BANK8 COMMON RESET CODE
+
+	INCLUDE	"gfss.iz"
+
+	ORG	402EH
+
+	; MSX2 or later
+	LD	A,(002DH)
+	OR	A
+	RET	Z
+
+	DI
+	LD	SP, 0F380H
+
+	; reset megarom bank of page2
+
+	XOR	A
+	LD	(7000H),A
+
+	; .patched_init
+	JP	0;GFSS_INIT_BANK0
+
+	DS	4042H-$

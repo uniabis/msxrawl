@@ -1,0 +1,10 @@
+/.pre/
+/ana/
+/gf.rom
+/gfss.rom
+/gfss.exe
+/bin2c.exe
+/z80/gf*.bin
+/z80/gf*.h
+/z80/gf*.lst
+/gfss.ips

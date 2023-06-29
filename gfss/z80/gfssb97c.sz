@@ -1,0 +1,490 @@
+; BANK0 PATCH CODE
+
+	INCLUDE	"gfss.iz"
+
+	ORG	0B97CH
+
+; B97C SOUND DRIVER INTERRUPT ORIGINAL ENTRY
+
+SOUND_DRIVER_INTERRUPT_ENTRY:
+	JP	GFSS_SOUND_DRIVER
+
+; ORIGINAL MSX1 DOUBLE BUFFER
+; 1B00 SPRITE ATTIBUTE TABLE 1
+; 1B80 SPRITE ATTIBUTE TABLE 2
+
+; MSX2 DOUBLE BUFFER
+; 4C00 SPRITE COLOR TABLE 1
+; 4E00 SPRITE ATTIBUTE TABLE 1
+; 5C00 SPRITE COLOR TABLE 2
+; 5E00 SPRITE ATTIBUTE TABLE 2
+
+; CALLED FROM 8182/8240
+; ???? <- BCEB
+.patched_sprite_update:
+  IFDEF GRAPHIC3
+
+	; update sprite color table only
+	LD	A, (0D0D9H)
+	AND	A
+	JR	NZ, .bufferc1
+.bufferc2:
+	LD	DE, 5C00H
+
+	EXX
+	LD	HL, 0D15AH+3
+
+	JP	.updatec
+
+.bufferc1:
+	LD	DE, 4C00H
+
+	EXX
+	LD	HL, 0D0DAH+3
+
+	JP	.updatec
+
+  ELSE
+	RET
+  ENDIF
+
+	DS	0B99FH -$
+
+	ASSERT GFSS_SET_SPRITE == $, fix gfss.inc
+
+.new_sprite_update:
+
+	; update sprite attribute table
+
+	LD	A, (0D0D9H)
+	AND	A
+	JR	NZ, .buffern1
+.buffern2:
+	LD	HL, 0D15AH
+
+  IFDEF GRAPHIC3
+	LD	DE, 5E00H
+	CALL	.updaten
+	LD	BC, 0BF05H
+  ELSE
+	LD	DE, 5B80H
+	CALL	.updaten
+	LD	BC, 3705H
+  ENDIF
+	JP	WRTVDP
+
+.buffern1:
+	LD	HL, 0D0DAH
+
+  IFDEF GRAPHIC3
+	LD	DE, 4E00H
+	CALL	.updaten
+	LD	BC,09F05H
+  ELSE
+	LD	DE, 5F80H
+	CALL	.updaten
+	LD	BC, 3F05H
+  ENDIF
+	JP	WRTVDP
+
+  IFDEF GRAPHIC3
+
+.updatec:
+	LD	BC, 4
+
+	EXX
+
+	LD	A,(0x0007)
+	LD	C, A
+	INC	C
+	LD	B, 32
+
+.colr_lp3:
+
+	EXX
+
+	LD	A, (HL)
+
+	EXX
+
+	LD	H, A
+
+	DI
+
+	; SET A14=1
+	LD	A, 1
+	OUT	(C), A
+	LD	A, 128 + 14
+	OUT	(C), A
+
+  IFNDEF VDPNOWAIT
+	NOP
+	NOP
+  ENDIF
+	OUT	(C), E
+
+  IFNDEF VDPNOWAIT
+	NOP
+	NOP
+  ENDIF
+	OUT	(C), D
+
+	DEC	C
+
+	LD	A, B
+
+	LD	B, 16
+	LD	L, B
+
+.color_lp4:
+	OUT	(C), H
+	DJNZ	.color_lp4
+
+	LD	H, B
+	ADD	HL, DE
+	EX	DE, HL
+
+	LD	B, A
+
+	INC	C
+
+	; SET A14=0
+	XOR	A
+	OUT	(C), A
+	LD	A, 128 + 14
+	OUT	(C), A
+
+	EI
+
+	EXX
+
+.match_color:
+	ADD	HL, BC
+
+	EXX
+
+	DJNZ	.colr_lp3
+
+	RET
+
+  ENDIF
+
+.updaten:
+
+	LD	A, (0x0007)
+	LD	C, A
+	INC	C
+
+  IFDEF GRAPHIC3
+	; SET A14=1
+	LD	A, 1
+	OUT	(C), A
+	LD	A, 128 + 14
+	OUT	(C), A
+  ENDIF
+
+  IFNDEF VDPNOWAIT
+	NOP
+	NOP
+  ENDIF
+	OUT	(C), E
+
+  IFNDEF VDPNOWAIT
+	NOP
+	NOP
+  ENDIF
+	OUT	(C), D
+
+	DEC	C
+
+	LD	A, (GFSS_SCROLL_OFFSET)
+	LD	E,A
+
+	LD	B, 32
+
+.attribute_lp:
+	; Y
+	LD	A, (HL)
+	CP	192
+	JR	C, .disp
+
+	LD	A,240
+	JR	.nodisp
+
+.disp:
+	ADD	E
+.nodisp:
+	OUT	(C), A
+	INC	HL
+
+	; X
+	LD	A, (HL)
+	OUT	(C), A
+	INC	HL
+
+	; PATTERN
+	LD	A, (HL)
+	OUT	(C), A
+	INC	HL
+
+  IFDEF GRAPHIC3
+	; SKIP COLOR
+  ELSE
+	; COLOR
+	LD	A, (HL)
+  ENDIF
+	OUT	(C), A
+	INC	HL
+
+	DJNZ	.attribute_lp
+
+	INC	C
+
+  IFDEF GRAPHIC3
+	; SET A14=0
+	OUT	(C), B
+	LD	A, 128 + 14
+	OUT	(C), A
+  ENDIF
+
+	; SET BACK DROP COLOR TO LIGHT RED
+	;LD	DE, 0987H
+	;OUT	(C), D
+	;OUT	(C), E
+
+	LD	A, (0C44DH) ; TITLE FLAG
+	OR	A
+	JR	NZ, .skip_title
+
+	; SET COLOR TABLE TO SHOW
+	OUT	(C), A
+	LD	E, 10 + 080H
+	OUT	(C), E
+
+.skip_title:
+
+	LD	A, (0D0D7H)
+	OR	A
+	RET	NZ
+
+	INC	A
+	LD	(0D0D7H), A
+	LD	(0D0D8H), A
+
+	EI
+
+	; continue original H.TIMI handler
+	JP	0BE7BH
+
+
+.wrtvrm_ex:
+
+ ;DEFINE NEOSMA20
+ IFDEF NEOSMA20
+ 	PUSH	BC
+
+ 	LD	B, A
+
+ 	LD	A, (0007H)
+ 	INC	A
+ 	LD	C, A
+
+	DI
+
+	OUT	(C), L
+
+	LD	A, H
+	AND	3FH
+	OR	40H
+	OUT	(C), A
+
+  IFNDEF VDPNOWAIT
+	NOP
+  ENDIF
+
+	DEC	C
+	OUT	(C), B
+
+	POP	BC
+
+ ELSE
+
+	PUSH	AF
+	LD	A, L
+	DI
+	OUT	(99H), A
+	LD	A, H
+	AND	3FH
+	OR	40H
+	OUT	(99H), A
+	POP	AF
+	OUT	(98H), A
+ ENDIF
+
+	EI
+	RET
+
+.rdvrm_ex:
+
+ IFDEF NEOSMA20
+
+	PUSH	BC
+
+ 	LD	A, (0007H)
+ 	INC	A
+ 	LD	C, A
+
+	DI
+
+	OUT	(C), L
+
+	LD	A, H
+	AND	3FH
+	OUT	(C), A
+
+ 	LD	A, (0006H)
+ 	LD	C, A
+
+	IN	A, (C)
+
+	POP	BC
+
+ ELSE
+
+	LD	A, L
+	DI
+	OUT	(99H), A
+	LD	A, H
+	AND	3FH
+	OUT	(99H), A
+
+  IFNDEF VDPNOWAIT
+	NOP
+	NOP
+  ENDIF
+
+	IN	A, (98H)
+
+ ENDIF
+
+	EI
+	RET
+
+	;ASSERT GFSS_INIT_BANK0 == $, fix gfss.inc
+
+.patched_init_bank0:
+
+	XOR	A ; clear value
+
+	; clear work
+	LD	HL, 0C446H ; work address
+	LD	BC, 0D93H ; work size
+	CALL	883FH ; fill memory
+
+	;XOR	A
+	LD	(GFSS_SCROLL_OFFSET), A
+
+	;XOR	A
+	LD	HL, 06000H
+	LD	BC, 01800H
+	CALL	BIGFIL
+
+	; GET SLOT OF PAGE 2
+	CALL	0BF98H
+
+	DI
+
+	; SET H.KEYI
+	LD	(H.KEYI+1), A
+	LD	HL, GFSS_H_KEYI
+	LD	(H.KEYI+2), HL
+	LD	A, 0C9H
+	LD	(H.KEYI+4), A
+	LD	A, 0F7H
+	LD	(H.KEYI+0), A
+
+	EI
+
+	; continue original initalize code
+	JP	8042H
+
+; CALLED FROM 806F
+; ???? <- BD90 PATCHED GRAPHIC INIT
+.init_graphic:
+	XOR	A
+	LD	(CLIKSW), A
+	INC	A
+	LD	(BDRCLR), A
+
+  IFDEF GRAPHIC3
+	; GRAPHIC3(SCREEN4)
+	LD	A, 04H
+  ELSE
+	; GRAPHIC2(SCREEN2)
+	LD	A, 02H
+  ENDIF
+	LD	IX, CHGMOD
+	CALL	EXTROM
+
+	; PALETTE(15) = (4,4,4)
+	LD	A, 44H
+	LD	DE, 0E04H
+	LD	IX, SETPLT
+	CALL	EXTROM
+
+	LD	HL, 01800H
+	LD	BC, 00800H
+	LD	A, 20H
+	CALL	GFSS_FILVRM
+
+	LD	A, 06H
+	LD	(GFSS_NAME_TABLE_NEXT), A
+
+	DI
+
+	LD	A, (0007H)
+	INC	A
+	LD	C, A
+
+	; SET HSYNC INTERRUPT LINE TO SCREEN BOTTOM
+	LD	A, 192 - 8
+	LD	(GFSS_HSYNC_LINE), A
+	OUT	(C), A
+	LD	E, 19 + 80H
+	OUT	(C), E
+
+	; ENABLE HSYNC INTERRUPT
+	LD	A, (RG0SAV)
+	OR	A, 10H
+	OUT	(C), A
+	LD	E, 80H
+	OUT	(C), E
+
+	EI
+
+	; continue relocated original initalize graphic code
+	JP	0BDACH - 0BD90H + .relocated_code
+
+.set_name_table:
+	LD	A, B
+	LD	(GFSS_NAME_TABLE_NEXT), A
+	RET
+
+	DS	0BC98H - (117 + 102) - $
+
+; BBBD <- BD90 COPY OF ORGINAL GRAPHIC INIT CODE
+.relocated_code:
+	DS	(117 + 102 - 2 * 10), 0FFh
+
+	DW	GFSS_CURRENT_BANK
+	DW	.set_name_table
+	DW	.patched_init_bank0
+	DW	.rdvrm_ex
+	DW	.wrtvrm_ex
+	DW	.new_sprite_update
+	DW	0BE05H - 0BD90H + .relocated_code
+	DW	0BE0FH - 0BD90H + .relocated_code
+	DW	.init_graphic
+	DW	.patched_sprite_update
+
+	DS	0BC98H - $
