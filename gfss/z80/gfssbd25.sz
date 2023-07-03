@@ -10,9 +10,13 @@
 ; DE DESTINATION VRAM ADDRESS
 ; BC LENGTH
 LDIRVM_EX:
-	LD	A, B
-	LD	B, C
-	LD	C, A
+	LD	A, C
+	OR	A
+	JR	NZ, .nzl
+	DEC	B
+.nzl:
+	LD	C, B
+	LD	B, A
 	INC	C
 
 .lp2:
@@ -46,9 +50,13 @@ LDIRVM_EX:
 ; DE DESTINATION RAM ADDRESS
 ; BC LENGTH
 LDIRMV_EX:
-	LD	A, B
-	LD	B, C
-	LD	C, A
+	LD	A, C
+	OR	A
+	JR	NZ, .nzl
+	DEC	B
+.nzl:
+	LD	C, B
+	LD	B, A
 	INC	C
 
 	EX	DE, HL
